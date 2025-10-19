@@ -1,3 +1,4 @@
+#pragma once
 /**
  * \file main.h
  *
@@ -24,6 +25,7 @@
  * E_CONTROLLER_MASTER is pedantically correct within the PROS styleguide, but
  * not convenient for most student programmers.
  */
+
 #define PROS_USE_SIMPLE_NAMES
 
 /**
@@ -35,11 +37,14 @@
 #define PROS_USE_LITERALS
 
 #include "api.h"
+#include "pros/apix.h"
+#include "lemlib/api.hpp" // IWYU pragma: keep
 
 /**
  * You should add more #includes here
  */
 //#include "okapi/api.hpp"
+
 
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do
@@ -49,8 +54,10 @@
  * concurrently! The okapi namespace will export all symbols inside the pros
  * namespace.
  */
-// using namespace pros;
-// using namespace pros::literals;
+using namespace pros;
+using namespace lemlib;
+using namespace std;
+using namespace pros::literals;
 // using namespace okapi;
 
 /**
@@ -74,7 +81,7 @@ void opcontrol(void);
 /**
  * You can add C++-only headers here
  */
-//#include <iostream>
+#include <iostream>
 #endif
 
 #endif  // _PROS_MAIN_H_

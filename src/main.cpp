@@ -1,9 +1,4 @@
 #include "main.h"
-#include "lemlib/api.hpp" // IWYU pragma: keep
-#include "lemlib/chassis/trackingWheel.hpp"
-
-using namespace pros;
-using namespace lemlib;
 
 Controller controller(E_CONTROLLER_MASTER);
 
@@ -19,9 +14,9 @@ Drivetrain drivetrain(&left_motors, // left motor group
                               2 // horizontal drift is 2 (for now)
 );
 
-pros::Imu imu(4); // TO DO: CHANGE LATER
+pros::Imu imu(11);
 
-pros::Rotation horizontal_rotation_sensor(1); // TO DO: CHANGE LATER
+pros::Rotation horizontal_rotation_sensor(12); 
 
 TrackingWheel left_vertical_tracking_wheel(
 	&left_motors,
@@ -89,7 +84,7 @@ ControllerSettings angular_controller(2, // proportional gain (kP)
 // );
 
 // create the chassis
-Chassis chassis(drivetrain,
+lemlib::Chassis chassis(drivetrain,
                         lateral_controller,
                         angular_controller,
                         sensors,
@@ -124,12 +119,16 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::delay(500); // allow time for LCD to initialize
-	pros::lcd::initialize();
-
-	pros::lcd::set_text(1, "Hello PROS User!");
-
-	// pros::lcd::register_btn1_cb(on_center_button);
+	delay(500); // allow time for LCD to initialize
+	lcd::initialize();
+	// screen::print(1, "Hello PROS User!");
+        delay(1000);
+        chassis.calibrate();
+        std::cout << "=== Program started ===" << std::endl;
+        // screen::
+        // chassis.setPose(0, 0, 0);
+	
+        // pros::lcd::register_btn1_cb(on_center_button);
 
 }
 
@@ -187,6 +186,7 @@ void opcontrol() {
                 int rightY = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
 
                 // move the robot
+                chassis.tank(leftY, rightY);
 
                 if (millis() - start_t <= loop_delay_ms) delay(loop_delay_ms - (millis() - start_t));
         }
