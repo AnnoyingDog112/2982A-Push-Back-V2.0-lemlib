@@ -39,6 +39,7 @@
 #include "api.h"
 #include "pros/apix.h"
 #include "lemlib/api.hpp" // IWYU pragma: keep
+#include "pid_tuning.hpp"
 
 /**
  * You should add more #includes here

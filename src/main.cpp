@@ -1,116 +1,109 @@
 #include "main.h"
 
-Controller controller(E_CONTROLLER_MASTER);
-
-MotorGroup left_motors({13, 14, 15}, MotorGearset::blue);
-MotorGroup right_motors({-16, -17,-18}, MotorGearset::blue);
+MotorGroup right_motors({13, 14, 15}, MotorGearset::blue);
+MotorGroup left_motors({-16, -17,-18}, MotorGearset::blue);
 
 // drivetrain settings
 Drivetrain drivetrain(&left_motors, // left motor group
                               &right_motors, // right motor group
                               11.5, // 11.5 inch track width
-                              lemlib::Omniwheel::NEW_325, // using new 3.25" omnis
+                              Omniwheel::NEW_325, // using new 3.25" omnis
                               450, // drivetrain rpm is 450
                               2 // horizontal drift is 2 (for now)
 );
 
-pros::Imu imu(11);
+Imu imu(11);
 
-pros::Rotation horizontal_rotation_sensor(12); 
-
-TrackingWheel left_vertical_tracking_wheel(
-	&left_motors,
-	lemlib::Omniwheel::NEW_325, 
-	-5.75, // located on the tracking center
-	450
-);
-
-TrackingWheel right_vertical_tracking_wheel(
-	&right_motors,
-	lemlib::Omniwheel::NEW_325, 
-	5.75, // located on the tracking center
-	450
-);
+Rotation horizontal_rotation_sensor(-8); 
 
 TrackingWheel horizontal_tracking_wheel(
         &horizontal_rotation_sensor,
-        lemlib::Omniwheel::NEW_325, 
-        0, // located on the tracking center
+        Omniwheel::NEW_325, 
+        1.5, // located on the tracking center
         450
 );
 
-OdomSensors sensors(&left_vertical_tracking_wheel, // left drivtrain tracking wheel using drivetrain IMEs
-                            &right_vertical_tracking_wheel, // right drivtrain tracking wheel using drivetrain IMEs
-                            &horizontal_tracking_wheel, // Set to none(for now as we don't have one)
-                            nullptr, // Set to none(for now as we don't have one)
+OdomSensors sensors(nullptr, 
+                            nullptr, 
+                            nullptr,
+                            nullptr,
                             &imu // inertial sensor(none right now)
 );
 
 // lateral PID controller
-ControllerSettings lateral_controller(10, // proportional gain (kP)
+ControllerSettings lateral_controller(7, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              3, // derivative gain (kD)
-                                              3, // anti windup
+                                              0, // derivative gain (kD)
+                                              0, // anti windup
                                               1, // small error range, in inches
                                               100, // small error range timeout, in milliseconds
-                                              3, // large error range, in inches
+                                              5, // large error range, in inches
                                               500, // large error range timeout, in milliseconds
-                                              20 // maximum acceleration (slew)
+                                              0 // maximum acceleration (slew)
 );
 
 // angular PID controller
-ControllerSettings angular_controller(2, // proportional gain (kP)
-                                              0, // integral gain (kI)
-                                              10, // derivative gain (kD)
-                                              3, // anti windup
+ControllerSettings angular_controller(1.7, // proportional gain (kP)
+                                              0.2, // integral gain (kI)
+                                              8, // derivative gain (kD)
+                                              6, // anti windup
                                               1, // small error range, in degrees
                                               100, // small error range timeout, in milliseconds
-                                              3, // large error range, in degrees
+                                              5, // large error range, in degrees
                                               500, // large error range timeout, in milliseconds
                                               0 // maximum acceleration (slew)
 );
 
 
 // // input curve for throttle input during driver control
-// lemlib::ExpoDriveCurve throttle_curve(3, // joystick deadband out of 127
+// ExpoDriveCurve throttle_curve(3, // joystick deadband out of 127
 //                                      10, // minimum output where drivetrain will move out of 127
 //                                      1.019 // expo curve gain
 // );
 
+// // input curve for throttle input during driver control
+ExpoDriveCurve throttle_curve(0, // joystick deadband out of 127
+                                     0, // minimum output where drivetrain will move out of 127
+                                     1.23 // expo curve gain
+);
+
 // // input curve for steer input during driver control
-// lemlib::ExpoDriveCurve steer_curve(3, // joystick deadband out of 127
+// ExpoDriveCurve steer_curve(3, // joystick deadband out of 127
 //                                   10, // minimum output where drivetrain will move out of 127
 //                                   1.019 // expo curve gain
 // );
 
+ExpoDriveCurve steer_curve(0, // joystick deadband out of 127
+                                  0, // minimum output where drivetrain will move out of 127
+                                  1.23 // expo curve gain
+);
+
 // create the chassis
-lemlib::Chassis chassis(drivetrain,
+Chassis chassis(drivetrain,
                         lateral_controller,
                         angular_controller,
                         sensors,
-                        nullptr,
-                        nullptr
+                        &throttle_curve,
+                        &steer_curve
                         // &throttle_curve, 
                         // &steer_curve
 );
 
-int loop_delay_ms = 25;
+Controller controller(E_CONTROLLER_MASTER);
 
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-	}
-}
+
+Motor intake_stg_1_motor(19, MotorGearset::rpm_600);
+Motor intake_stg_2_motor(9, MotorGearset::green);
+Motor intake_stg_3_motor(20, MotorGearset::rpm_600);
+
+adi::DigitalOut trapdoor('A', false);
+adi::DigitalOut match_load('C', false);
+
+int loop_delay_ms = 20;
+bool intake_O_F = false;
+bool trapdoor_O_F = false;
+bool loader_O_F = false;
+
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -119,16 +112,31 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	delay(500); // allow time for LCD to initialize
-	lcd::initialize();
+	// lcd::initialize();
 	// screen::print(1, "Hello PROS User!");
-        delay(1000);
-        chassis.calibrate();
-        std::cout << "=== Program started ===" << std::endl;
-        // screen::
-        // chassis.setPose(0, 0, 0);
-	
-        // pros::lcd::register_btn1_cb(on_center_button);
+        chassis.calibrate(true);
+        cout << "=== Program started ===" << endl;
+        chassis.setPose(0, 0, 0);
+	// Task screenTask([&]() {
+        //         while (true) {
+        //                 // print robot location to the brain screen
+        //                 lcd::print(0, "X: %f", chassis.getPose().x); // x
+        //                 lcd::print(1, "Y: %f", chassis.getPose().y); // y
+        //                 lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
+        //                 // log position telemetry
+        //                 lemlib::telemetrySink()->info("Chassis pose: {}", chassis.getPose());
+        //                 // delay to save resources
+        //                 delay(50);
+        //         }
+        // });
+        // while (true) { // infinite loop
+        //         // print measurements from the rotation sensor
+        //         pros::lcd::print(1, "Rotation Sensor: %i", horizontal_rotation_sensor.get_position());
+        //         pros::delay(10); // delay to save resources. DO NOT REMOVE
+        // }
+        chassis.setBrakeMode(motor_brake_mode_e::E_MOTOR_BRAKE_HOLD);
+        // autonomous(); // Uncomment this line to run autonomous at the start of the program
+        // lcd::register_btn1_cb(on_center_button);
 
 }
 
@@ -163,6 +171,22 @@ void competition_initialize() {}
  */
 void autonomous() 
 {
+        // start_angular_pid_logging_task(
+        //     &chassis,
+        //     &imu,
+        //     angular_controller,
+        //     90, // target in degrees
+        //     5000, // timeout in ms
+        //     loop_delay_ms
+        // );
+        start_lateral_pid_logging_task(
+            &chassis,
+            &imu,
+            lateral_controller,
+            48, // target in inches
+            8000, // timeout in ms
+            loop_delay_ms
+        );
 }
 
 /**
@@ -179,15 +203,81 @@ void autonomous()
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+        chassis.setBrakeMode(motor_brake_mode_e::E_MOTOR_BRAKE_COAST);
         while (true) {
-                int start_t = pros::millis();
                 // get left y and right y positions
-                int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-                int rightY = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+                int leftY = controller.get_analog(E_CONTROLLER_ANALOG_LEFT_Y);
+                int leftX = controller.get_analog(E_CONTROLLER_ANALOG_LEFT_X);
+                int rightY = controller.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y);
+                int rightX = controller.get_analog(E_CONTROLLER_ANALOG_RIGHT_X);
+                
+                if (controller.get_digital(E_CONTROLLER_DIGITAL_X)){
+                        if (!intake_O_F){
+                                intake_stg_3_motor.move_velocity(180);
+                                intake_O_F = true;
+                        }
+                        else{
+                                intake_stg_3_motor.move_velocity(0);
+                                intake_O_F = false;
+                        }
+                }
+                else if (controller.get_digital(E_CONTROLLER_DIGITAL_B)){
+                        if(!intake_O_F){
+                                intake_stg_3_motor.move_velocity(-600);
+                                intake_O_F = true;
+                        }
+                        else{
+                                intake_stg_3_motor.move_velocity(0);
+                                intake_O_F = false;
+                        }
+                }
 
+                if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
+                        intake_stg_2_motor.move_velocity(-600);
+                }
+                else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
+                        intake_stg_2_motor.move_velocity(600);
+                }
+                else{
+                        intake_stg_2_motor.move_velocity(0);
+                }
+                
+                if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+                        intake_stg_1_motor.move_velocity(600);
+                }
+                else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
+                        intake_stg_1_motor.move_velocity(-600);
+                }
+                else{
+                        intake_stg_1_motor.move_velocity(0);
+                }
+
+
+                if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)){
+                        if (!trapdoor_O_F){
+                                trapdoor.set_value(true);
+                                trapdoor_O_F = true;
+                        }
+                        else{
+                                trapdoor.set_value(false);
+                                trapdoor_O_F = false;
+                        }
+                }
+                if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)){
+                        if (!loader_O_F){
+                                match_load.set_value(true);
+                                loader_O_F = true;
+                        }
+                        else{
+                                match_load.set_value(false);
+                                loader_O_F = false;
+                        }
+                }
+                
+                
                 // move the robot
                 chassis.tank(leftY, rightY);
 
-                if (millis() - start_t <= loop_delay_ms) delay(loop_delay_ms - (millis() - start_t));
+                delay(10);
         }
 }
