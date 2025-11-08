@@ -196,7 +196,7 @@ void initialize() {
         // Uncomment to choose starting pose in initialize
         // chassis.setPose(63, -16, 270); 
         // chassis.setPose(0, 0, 0);
-        autonomous(); // Uncomment this line to run autonomous at the start of the program
+        // autonomous(); // Uncomment this line to run autonomous at the start of the program
 
 }
 
@@ -277,8 +277,8 @@ void autonomous() {
 
         
         // Turn and drive twoards the target point
-        chassis.turnToPoint(53, -46, 1000, {}, false);
-        chassis.moveToPoint(53, -46, 2000, {}, false);
+        chassis.turnToPoint(50, -46, 1000, {}, false);
+        chassis.moveToPoint(50, -46, 2000, {}, false);
         
         // Turn twoards loading zone and drive. Also lower the match load
         chassis.turnToPoint(66, -46, 1000, {}, false);
