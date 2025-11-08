@@ -11,7 +11,7 @@ Drivetrain drivetrain(&left_motors, // left motor group
                               11.5, // 11.5 inch track width
                               Omniwheel::NEW_325, // using new 3.25" omnis
                               450, // drivetrain rpm is 450
-                              2 // horizontal drift is 2 (for now)
+                              4 // horizontal drift is 2 (for now)
 );
 
 Imu imu(11);
@@ -35,7 +35,7 @@ OdomSensors sensors(nullptr,
 // lateral PID controller
 ControllerSettings lateral_controller(7, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              0, // derivative gain (kD)
+                                              2, // derivative gain (kD)
                                               0, // anti windup
                                               1, // small error range, in inches
                                               100, // small error range timeout, in milliseconds
@@ -45,9 +45,9 @@ ControllerSettings lateral_controller(7, // proportional gain (kP)
 );
 
 // angular PID controller
-ControllerSettings angular_controller(1.7, // proportional gain (kP)
-                                              0.2, // integral gain (kI)
-                                              8, // derivative gain (kD)
+ControllerSettings angular_controller(1.8, // proportional gain (kP)
+                                              0, // integral gain (kI)
+                                              13, // derivative gain (kD)
                                               6, // anti windup
                                               1, // small error range, in degrees
                                               100, // small error range timeout, in milliseconds
@@ -66,7 +66,7 @@ ControllerSettings angular_controller(1.7, // proportional gain (kP)
 // input curve for throttle input during driver control
 ExpoDriveCurve throttle_curve(8, // joystick deadband out of 127
                                      13, // minimum output where drivetrain will move out of 127
-                                     1.15 // expo curve gain
+                                     1.09 // expo curve gain
 );
 
 // // input curve for steer input during driver control
@@ -77,7 +77,7 @@ ExpoDriveCurve throttle_curve(8, // joystick deadband out of 127
 
 ExpoDriveCurve steer_curve(8, // joystick deadband out of 127
                                   18, // minimum output where drivetrain will move out of 127
-                                  1.15 // expo curve gain
+                                  1.09 // expo curve gain
 );
 
 // create the chassis
@@ -113,7 +113,7 @@ void wing_descore_move(bool up_down){
         wing_descore.set_value(up_down);
 }
 void intake_stg1_move(bool intake){
-        if (intake){
+        if (!intake){
                 intake_stg_1_motor.move_velocity(200);
         }
         else{
@@ -162,6 +162,7 @@ bool intake_stg3_O_F = false;
 bool trapdoor_O_F = false;
 bool loader_O_F = false;
 bool intake_stg2_O_F = false;
+bool wing_descore_O_F = false;
 
 
 /**
@@ -175,13 +176,14 @@ void initialize() {
 	// screen::print(1, "Hello PROS User!");
         chassis.calibrate(true);
         cout << "=== Program started ===" << endl;
-        chassis.setPose(0, 0, 0);
+        // chassis.setPose(0, 0, 0);
 	Task screenTask([&]() {
                 while (true) {
                         // print robot location to the brain screen
                         lcd::print(0, "X: %f", chassis.getPose().x); // x
                         lcd::print(1, "Y: %f", chassis.getPose().y); // y
                         lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
+                        cout << "(" << chassis.getPose().x << ", " << chassis.getPose().y << ")" << ",";
                         // log position telemetry
                         lemlib::telemetrySink()->info("Chassis pose: {}", chassis.getPose());
                         // delay to save resources
@@ -189,12 +191,13 @@ void initialize() {
                 }
         });
         chassis.setBrakeMode(motor_brake_mode_e::E_MOTOR_BRAKE_HOLD);
-        // autonomous(); // Uncomment this line to run autonomous at the start of the program
         // lcd::register_btn1_cb(on_center_button);
         
         // Uncomment to choose starting pose in initialize
-        chassis.setPose(63, -16, 270); 
+        // chassis.setPose(63, -16, 270); 
         // chassis.setPose(0, 0, 0);
+        // autonomous(); // Uncomment this line to run autonomous at the start of the program
+
 }
 
 /**
@@ -219,7 +222,7 @@ void disabled() {
  * starts.
  */
 void competition_initialize() {
-        chassis.setPose(63, -16, 270);
+        // chassis.setPose(63, -16, 270);
 }
 
 /**
@@ -234,14 +237,15 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-        // move 48" forwards
-        chassis.moveToPoint(0, 48, 10000);
+        lcd::print(3, "Autonomous");
+        
         /*
+        match_load_move(false);
         start_angular_pid_logging_task(
             &chassis,
             &imu,
             angular_controller,
-            90, // target in degrees
+            180, // target in degrees
             5000, // timeout in ms
             loop_delay_ms
         );
@@ -254,32 +258,50 @@ void autonomous() {
             loop_delay_ms
         );
         */
+
+        
+        chassis.setPose(63, -16, 270);
+        // chassis.setPose(0, 0, 0);
         wing_descore_move(true);
         intake_stg2_move(true);
         intake_stg1_move(true);
         intake_stg3_move(false);
-        chassis.moveToPoint(22, -22, 2, {}, false);
+        match_load_move(false);
         
-        int t1 = millis();
-        int t2 = t1;
-        while ((t2-t1)<2000){
-                t2 = millis();
-                delay(10);
-        }
+        // Take center balls
+        chassis.moveToPose(27, -20, 270, 2000, {}, false);
+        // Delay to allow balls to intake
+        delay(500);
+        chassis.moveToPose(22, -20, 270, 500, {}, false);
+        // delay(1000);
+
         
-        chassis.moveToPoint(53, -54, 2, {}, false);
+        // Turn and drive twoards the target point
+        chassis.turnToPoint(53, -46, 1000, {}, false);
+        chassis.moveToPoint(53, -46, 2000, {}, false);
+        
+        // Turn twoards loading zone and drive. Also lower the match load
+        chassis.turnToPoint(66, -46, 1000, {}, false);
         match_load_move(true);
-        chassis.moveToPoint(63, -47, 1, {}, false);
+        delay(1000);
+        chassis.moveToPose(66, -46, 90, 1000, {.minSpeed=70}, false);
+        // chassis.arcade(110,0);
         
-        t1 = millis();
-        t2 = t1;
-        while ((t2-t1)<2000){
-                t2 = millis();
-                delay(10);
-        }
-        chassis.moveToPoint(53, -54, 1, {.forwards=false}, false);
-        chassis.moveToPoint(27, -47, 2);
+        // Delay to allow for loading
+        delay(1000);
+        
+        // Backup and turn to face the goal. Also raise the match load
+        // chassis.moveToPoint(53, -47.5,  1000, {.forwards=false}, false);
+        // match_load_move(false);
+        // chassis.turnToHeading(90, 1, {}, false);
+        
+        // Move to goal and score
+        chassis.moveToPose(27, -46, 90, 2000, {.forwards=false}, false);
+        match_load_move(false);
+        chassis.arcade(-127,0);
         intake_stg3_move(true);
+        delay(5000);
+        
 }
 
 /**
@@ -305,7 +327,7 @@ void opcontrol() {
                 int rightY = controller.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y);
                 int rightX = controller.get_analog(E_CONTROLLER_ANALOG_RIGHT_X);
                 
-                if (controller.get_digital_new_press(E_CONTROLLER_DIGITAL_X)){
+                if (controller.get_digital_new_press(E_CONTROLLER_DIGITAL_B)){
                         if (!intake_stg3_O_F){
                                 intake_stg3_move(true);
                                 intake_stg3_O_F = true;     
@@ -315,7 +337,7 @@ void opcontrol() {
                                 intake_stg3_O_F = false;
                         }
                 }
-                else if (controller.get_digital_new_press(E_CONTROLLER_DIGITAL_B)){
+                else if (controller.get_digital_new_press(E_CONTROLLER_DIGITAL_X)){
                         if(!intake_stg3_O_F){
                                 intake_stg3_move(false);
                                 intake_stg3_O_F = true;
@@ -326,31 +348,39 @@ void opcontrol() {
                         }
                 }
                 if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
-                        if (!intake_stg2_O_F){
-                                intake_stg2_move(true);
-                                intake_stg2_O_F = true;
-                        }
-                        else{
-                                intake_stg2_stop();
-                        }
+                        intake_stg2_move(true);
                 }
                 else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
-                        if(!intake_stg2_O_F){
-                                intake_stg2_move(false);
-                                intake_stg2_O_F = true;
-                        }
-                        else{
-                                intake_stg2_stop();
-                        }
+                        intake_stg2_move(false);
                 }
                 else{
                         intake_stg2_stop();
                 }
+                // if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)){
+                //         if (!intake_stg2_O_F){
+                //                 intake_stg2_move(true);
+                //                 intake_stg2_O_F = true;
+                //         }
+                //         else{
+                //                 intake_stg2_stop();
+                //                 intake_stg2_O_F = false;
+                //         }
+                // }
+                // else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
+                //         if(!intake_stg2_O_F){
+                //                 intake_stg2_move(false);
+                //                 intake_stg2_O_F = true;
+                //         }
+                //         else{
+                //                 intake_stg2_stop();
+                //                 intake_stg2_O_F = false;
+                //         }
+                // }
                 
-                if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+                if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
                         intake_stg1_move(true);
                 }
-                else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
+                else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
                         intake_stg1_move(false);
                 }
                 else{
@@ -376,6 +406,16 @@ void opcontrol() {
                         else{
                                 match_load_move(false);
                                 loader_O_F = false;
+                        }
+                }
+                if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)){
+                        if(!wing_descore_O_F){
+                                wing_descore_move(true);
+                                wing_descore_O_F = true;
+                        }
+                        else{
+                                wing_descore_move(false);
+                                wing_descore_O_F = false;
                         }
                 }
                 
