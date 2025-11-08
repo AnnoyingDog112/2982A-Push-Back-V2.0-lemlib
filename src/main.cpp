@@ -321,7 +321,7 @@ void autonomous() {
  */
 void opcontrol() {
         chassis.setBrakeMode(motor_brake_mode_e::E_MOTOR_BRAKE_COAST);
-        wing_descore_move(true);
+        // wing_descore_move(true);
         while (true) {
                 // get left y and right y positions
                 int leftY = controller.get_analog(E_CONTROLLER_ANALOG_LEFT_Y);
