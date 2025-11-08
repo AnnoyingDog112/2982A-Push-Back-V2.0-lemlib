@@ -635,7 +635,8 @@
       }
     },
     "upload_options": {
-      "description": "Left Side Auto Plan"
+      "description": "Left Side Auto Plan",
+      "slot": 1
     },
     "use_early_access": false
   }
