@@ -260,7 +260,7 @@ void autonomous() {
         */
 
         
-        chassis.setPose(63, -16, 270);
+        chassis.setPose(63, 16, 270);
         // chassis.setPose(0, 0, 0);
         wing_descore_move(true);
         intake_stg2_move(true);
@@ -269,10 +269,10 @@ void autonomous() {
         match_load_move(false);
         
         // Take center balls
-        chassis.moveToPose(27, -21, 270, 2000, {}, false);
+        chassis.moveToPose(27, 21, 270, 2000, {}, false);
         // Delay to allow balls to intake
         delay(500);
-        chassis.moveToPose(22, -21, 270, 500, {}, false);
+        chassis.moveToPose(22, 21, 270, 500, {}, false);
         // delay(1000);
 
         
@@ -284,7 +284,7 @@ void autonomous() {
         chassis.turnToPoint(66, 46, 1000, {}, false);
         match_load_move(true);
         delay(1000);
-        chassis.moveToPose(66, -46, 90, 1000, {.minSpeed=70}, false);
+        chassis.moveToPose(66, 46, 90, 1000, {.minSpeed=70}, false);
         chassis.arcade(127, 0);
         // chassis.arcade(110,0);
         
