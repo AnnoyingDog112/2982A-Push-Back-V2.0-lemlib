@@ -15,5 +15,6 @@ temp.log
 temp.errors
 *.ini
 .d/
+project.pros
 
 2982A Push Back V2.0 lemlib.code-workspace
