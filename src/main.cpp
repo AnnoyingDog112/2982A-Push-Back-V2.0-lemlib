@@ -196,7 +196,7 @@ void initialize() {
         // Uncomment to choose starting pose in initialize
         // chassis.setPose(63, -16, 270); 
         // chassis.setPose(0, 0, 0);
-        autonomous(); // Uncomment this line to run autonomous at the start of the program
+        // autonomous(); // Uncomment this line to run autonomous at the start of the program
 
 }
 
