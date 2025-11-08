@@ -635,12 +635,8 @@
       }
     },
     "upload_options": {
-<<<<<<< HEAD
       "slot": 1
-=======
       "description": "Main program that all others are based on",
-      "slot": 4
->>>>>>> main
     },
     "use_early_access": false
   }
