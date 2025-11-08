@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "Dev",
+    "project_name": "Main",
     "target": "v5",
     "templates": {
       "LemLib": {
@@ -635,8 +635,8 @@
       }
     },
     "upload_options": {
-      "description": "Developer Project",
-      "slot": 3
+      "description": "Main program that all others are based on",
+      "slot": 4
     },
     "use_early_access": false
   }
