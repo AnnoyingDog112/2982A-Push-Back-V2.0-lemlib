@@ -260,7 +260,7 @@ void autonomous() {
         */
 
         
-        chassis.setPose(63, -16, 270);
+        chassis.setPose(63, 16, 270);
         // chassis.setPose(0, 0, 0);
         wing_descore_move(true);
         intake_stg2_move(true);
@@ -269,22 +269,22 @@ void autonomous() {
         match_load_move(false);
         
         // Take center balls
-        chassis.moveToPose(27, -20, 270, 2000, {}, false);
+        chassis.moveToPose(27, 20, 270, 2000, {}, false);
         // Delay to allow balls to intake
         delay(500);
-        chassis.moveToPose(22, -20, 270, 500, {}, false);
+        chassis.moveToPose(22, 20, 270, 500, {}, false);
         // delay(1000);
 
         
         // Turn and drive twoards the target point
-        chassis.turnToPoint(53, -46, 1000, {}, false);
-        chassis.moveToPoint(53, -46, 2000, {}, false);
+        chassis.turnToPoint(53, 46, 1000, {}, false);
+        chassis.moveToPoint(53, 46, 2000, {}, false);
         
         // Turn twoards loading zone and drive. Also lower the match load
-        chassis.turnToPoint(66, -46, 1000, {}, false);
+        chassis.turnToPoint(66, 46, 1000, {}, false);
         match_load_move(true);
         delay(1000);
-        chassis.moveToPose(66, -46, 90, 1000, {.minSpeed=70}, false);
+        chassis.moveToPose(66, 46, 90, 1000, {.minSpeed=70}, false);
         // chassis.arcade(110,0);
         
         // Delay to allow for loading
@@ -296,7 +296,7 @@ void autonomous() {
         // chassis.turnToHeading(90, 1, {}, false);
         
         // Move to goal and score
-        chassis.moveToPose(27, -46, 90, 2000, {.forwards=false}, false);
+        chassis.moveToPose(27, 46, 90, 2000, {.forwards=false}, false);
         match_load_move(false);
         chassis.arcade(-127,0);
         intake_stg3_move(true);
