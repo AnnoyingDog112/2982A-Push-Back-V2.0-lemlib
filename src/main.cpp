@@ -260,7 +260,7 @@ void autonomous() {
         */
 
         
-        chassis.setPose(63, 16, 270);
+        chassis.setPose(63, -16, 270);
         // chassis.setPose(0, 0, 0);
         wing_descore_move(true);
         intake_stg2_move(true);
