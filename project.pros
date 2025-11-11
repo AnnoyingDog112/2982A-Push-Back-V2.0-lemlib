@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "Left Side Auto",
+    "project_name": "Dev",
     "target": "v5",
     "templates": {
       "LemLib": {
@@ -635,8 +635,8 @@
       }
     },
     "upload_options": {
-      "description": "Left Side Auto Plan",
-      "slot": 1
+      "description": "Dev Auto Plan",
+      "slot": 3
     },
     "use_early_access": false
   }
