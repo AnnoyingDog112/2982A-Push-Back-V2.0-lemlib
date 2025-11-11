@@ -48,7 +48,7 @@ ControllerSettings lateral_controller(7, // proportional gain (kP)
 ControllerSettings angular_controller(1.8, // proportional gain (kP)
                                               0, // integral gain (kI)
                                               13, // derivative gain (kD)
-                                              6, // anti windup
+                                              0, // anti windup
                                               1, // small error range, in degrees
                                               100, // small error range timeout, in milliseconds
                                               5, // large error range, in degrees
@@ -66,7 +66,7 @@ ControllerSettings angular_controller(1.8, // proportional gain (kP)
 // input curve for throttle input during driver control
 ExpoDriveCurve throttle_curve(8, // joystick deadband out of 127
                                      13, // minimum output where drivetrain will move out of 127
-                                     1.09 // expo curve gain
+                                     1.02 // expo curve gain
 );
 
 // // input curve for steer input during driver control
@@ -77,7 +77,7 @@ ExpoDriveCurve throttle_curve(8, // joystick deadband out of 127
 
 ExpoDriveCurve steer_curve(8, // joystick deadband out of 127
                                   18, // minimum output where drivetrain will move out of 127
-                                  1.09 // expo curve gain
+                                  1.02 // expo curve gain
 );
 
 // create the chassis
@@ -197,6 +197,7 @@ void initialize() {
         // chassis.setPose(63, -16, 270); 
         // chassis.setPose(0, 0, 0);
         // autonomous(); // Uncomment this line to run autonomous at the start of the program
+        wing_descore_move(false);
 
 }
 
@@ -269,10 +270,13 @@ void autonomous() {
         match_load_move(false);
         
         // Take center balls
-        chassis.moveToPose(27, -21, 270, 2000, {}, false);
+        chassis.moveToPoint(34, -16, 2000, {}, false);
+        chassis.turnToPoint(27, -21, 1000, {}, false);
+        chassis.moveToPoint(27, -21, 1000, {}, false);
+        // chassis.moveToPose(27, -21, 270, 100, {}, false);
         // Delay to allow balls to intake
         delay(500);
-        chassis.moveToPose(22, -21, 270, 500, {}, false);
+        // chassis.moveToPose(22, -21, 270, 500, {}, false);
         // delay(1000);
 
         
@@ -285,24 +289,23 @@ void autonomous() {
         match_load_move(true);
         delay(1000);
         chassis.moveToPose(66, -46, 90, 1000, {.minSpeed=70}, false);
-        chassis.arcade(127, 0);
+        chassis.arcade(127, 0, true);
         // chassis.arcade(110,0);
         
         // Delay to allow for loading
         delay(800);
         
-        // Backup and turn to face the goal. Also raise the match load
-        // chassis.moveToPoint(53, -47.5,  1000, {.forwards=false}, false);
-        // match_load_move(false);
-        // chassis.turnToHeading(90, 1, {}, false);
-        
         // Move to goal and score
         chassis.moveToPose(27, -46, 90, 2000, {.forwards=false}, false);
         match_load_move(false);
-        chassis.arcade(-127,0);
+        chassis.arcade(-127,0, true);
         intake_stg3_move(true);
         delay(5000);
-        
+        chassis.arcade(0,0, true);
+        delay(500);
+        chassis.arcade(127, 0, true);
+        // 3.5, -47
+        // 22, -22
 }
 
 /**
@@ -320,7 +323,7 @@ void autonomous() {
  */
 void opcontrol() {
         chassis.setBrakeMode(motor_brake_mode_e::E_MOTOR_BRAKE_COAST);
-        wing_descore_move(true);
+        // wing_descore_move(true);
         while (true) {
                 // get left y and right y positions
                 int leftY = controller.get_analog(E_CONTROLLER_ANALOG_LEFT_Y);
@@ -420,8 +423,9 @@ void opcontrol() {
                         }
                 }
                 
+                chassis.curvature(leftY, rightX);
                 // move the robot
-                chassis.arcade(leftY, rightX);
+                // chassis.arcade(leftY, rightX);
 
                 delay(10);
         }
