@@ -82,7 +82,7 @@ static void angular_pid_logging_task(void* param) {
         int now = pros::millis();
         double current = args->chassis->getPose().theta;
         // PROS IMU returns Z gyro rate in deg/s
-        double rate = -(args->imu->get_gyro_rate().x)/1000;
+        double rate = (args->imu->get_gyro_rate().z)/1000;
 
         double output = logger.update(args->target, current, rate, now);
         
