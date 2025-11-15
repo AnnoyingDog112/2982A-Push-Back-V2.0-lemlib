@@ -3,7 +3,7 @@
 // Motor/chassis objects
 
 MotorGroup right_motors({13, 14, 15}, MotorGearset::blue);
-MotorGroup left_motors({-16, -17,-18}, MotorGearset::blue);
+MotorGroup left_motors({-16, -17,-7}, MotorGearset::blue);
 
 // drivetrain settings
 Drivetrain drivetrain(&left_motors, // left motor group
