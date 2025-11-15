@@ -3,7 +3,7 @@
 // Motor/chassis objects
 
 MotorGroup right_motors({13, 14, 15}, MotorGearset::blue);
-MotorGroup left_motors({-16, -17,-18}, MotorGearset::blue);
+MotorGroup left_motors({-16, -17,-7}, MotorGearset::blue);
 
 // drivetrain settings
 Drivetrain drivetrain(&left_motors, // left motor group
@@ -27,7 +27,7 @@ TrackingWheel horizontal_tracking_wheel(
 
 OdomSensors sensors(nullptr, 
                             nullptr, 
-                            nullptr,
+                            &horizontal_tracking_wheel,
                             nullptr,
                             &imu // inertial sensor(none right now)
 );
@@ -183,7 +183,7 @@ void initialize() {
                         lcd::print(0, "X: %f", chassis.getPose().x); // x
                         lcd::print(1, "Y: %f", chassis.getPose().y); // y
                         lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
-                        cout << "(" << chassis.getPose().x << ", " << chassis.getPose().y << ")" << ",";
+                        // cout << "(" << chassis.getPose().x << ", " << chassis.getPose().y << ")" << ",";
                         // log position telemetry
                         lemlib::telemetrySink()->info("Chassis pose: {}", chassis.getPose());
                         // delay to save resources
@@ -259,7 +259,15 @@ void autonomous() {
             loop_delay_ms
         );
         */
-
+        start_angular_pid_logging_task(
+            &chassis,
+            &imu,
+            angular_controller,
+            90, // target in degrees
+            5000, // timeout in ms
+            loop_delay_ms
+        );
+        return;
         
         chassis.setPose(63, -16, 270);
         // chassis.setPose(0, 0, 0);
