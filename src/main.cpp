@@ -1,4 +1,6 @@
 #include "main.h"
+#include "lemlib/asset.hpp"
+#include "lemlib/chassis/chassis.hpp"
 
 // Motor/chassis objects
 
@@ -100,6 +102,9 @@ Motor intake_stg_3_motor(20, MotorGearset::rpm_200);
 adi::DigitalOut trapdoor('C', false);
 adi::DigitalOut match_load('E', false);
 adi::DigitalOut wing_descore('A', false);
+
+//assets
+ASSET(NineBallTraj_txt);//"part of 9 ball-path.jerryio.txt");
 
 // Helpers for moving mechanisms
 
@@ -259,6 +264,7 @@ void autonomous() {
             loop_delay_ms
         );
         */
+        /*
         start_angular_pid_logging_task(
             &chassis,
             &imu,
@@ -268,6 +274,7 @@ void autonomous() {
             loop_delay_ms
         );
         return;
+        */
         
         chassis.setPose(63, -16, 270);
         // chassis.setPose(0, 0, 0);
@@ -280,19 +287,18 @@ void autonomous() {
         // Take center balls
         // chassis.moveToPoint(34, -16, 2000, {.minSpeed=30, .earlyExitRange=5}, false);
         chassis.moveToPoint(35, -16, 2000, {}, false);
-        chassis.turnToPoint(27, -21, 1000, {}, false);
-        chassis.moveToPoint(27, -21, 1000, {}, false);
-        // chassis.moveToPose(27, -21, 270, 100, {}, false);
-        // Delay to allow balls to intake
-        delay(500);
-        // chassis.moveToPose(22, -21, 270, 500, {}, false);
-        // delay(1000);
+        
+        // MOTION CHAIN LATER
+        chassis.swingToPoint(27, -21, DriveSide::LEFT, 1000, {}, false);
+        chassis.turnToPoint(3.5, -47, 2000, {}, false);
+        delay(0);
+        // chassis.moveToPose(27, -47, 90, 2000, {.forwards=false}, false);
+        chassis.follow(NineBallTraj_txt, 10, 3000, false, false);
+        intake_stg3_move(true);
 
-        
-        // Turn and drive twoards the target point
-        chassis.turnToPoint(50, -47, 1000, {}, false);
-        chassis.moveToPoint(50, -47, 2000, {}, false);
-        
+        // Delay to allow balls to score
+        delay(3000);
+                
         // Turn twoards loading zone and drive. Also lower the match load
         chassis.turnToPoint(66, -47, 1000, {}, false);
         match_load_move(true);
