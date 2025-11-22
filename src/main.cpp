@@ -285,7 +285,8 @@ void autonomous() {
         match_load_move(false);
         
         // Take center balls
-        chassis.moveToPoint(34, -16, 2000, {}, false);
+        // chassis.moveToPoint(34, -16, 2000, {.minSpeed=30, .earlyExitRange=5}, false);
+        // chassis.moveToPoint(35, -16, 2000, {}, false); // Not nessisary and will waste time
         chassis.turnToPoint(27, -21, 1000, {}, false);
         chassis.moveToPoint(27, -21, 1000, {}, false);
         // chassis.moveToPose(27, -21, 270, 100, {}, false);
