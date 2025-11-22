@@ -1,4 +1,6 @@
 #include "main.h"
+#include "lemlib/asset.hpp"
+#include "lemlib/chassis/chassis.hpp"
 
 // Motor/chassis objects
 
@@ -27,7 +29,7 @@ TrackingWheel horizontal_tracking_wheel(
 
 OdomSensors sensors(nullptr, 
                             nullptr, 
-                            nullptr,
+                            &horizontal_tracking_wheel,
                             nullptr,
                             &imu // inertial sensor(none right now)
 );
@@ -100,6 +102,9 @@ Motor intake_stg_3_motor(20, MotorGearset::rpm_200);
 adi::DigitalOut trapdoor('C', false);
 adi::DigitalOut match_load('E', false);
 adi::DigitalOut wing_descore('A', false);
+
+//assets
+ASSET(NineBallTraj_txt);//"part of 9 ball-path.jerryio.txt");
 
 // Helpers for moving mechanisms
 
@@ -183,7 +188,7 @@ void initialize() {
                         lcd::print(0, "X: %f", chassis.getPose().x); // x
                         lcd::print(1, "Y: %f", chassis.getPose().y); // y
                         lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
-                        cout << "(" << chassis.getPose().x << ", " << chassis.getPose().y << ")" << ",";
+                        // cout << "(" << chassis.getPose().x << ", " << chassis.getPose().y << ")" << ",";
                         // log position telemetry
                         lemlib::telemetrySink()->info("Chassis pose: {}", chassis.getPose());
                         // delay to save resources
@@ -196,7 +201,7 @@ void initialize() {
         // Uncomment to choose starting pose in initialize
         // chassis.setPose(63, -16, 270); 
         // chassis.setPose(0, 0, 0);
-        // autonomous(); // Uncomment this line to run autonomous at the start of the program
+        autonomous(); // Uncomment this line to run autonomous at the start of the program
         wing_descore_move(false);
 
 }
@@ -238,7 +243,7 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-        lcd::print(3, "Autonomous");
+        // lcd::print(3, "Autonomous");
         
         /*
         match_load_move(false);
@@ -259,7 +264,17 @@ void autonomous() {
             loop_delay_ms
         );
         */
-
+        /*
+        start_angular_pid_logging_task(
+            &chassis,
+            &imu,
+            angular_controller,
+            90, // target in degrees
+            5000, // timeout in ms
+            loop_delay_ms
+        );
+        return;
+        */
         
         chassis.setPose(63, -16, 270);
         // chassis.setPose(0, 0, 0);
@@ -270,9 +285,12 @@ void autonomous() {
         match_load_move(false);
         
         // Take center balls
-        chassis.moveToPoint(34, -16, 2000, {}, false);
-        chassis.turnToPoint(27, -21, 1000, {}, false);
-        chassis.moveToPoint(27, -21, 1000, {}, false);
+        chassis.moveToPoint(35, -16, 2000, {}, false);
+        chassis.swingToPoint(22, -22, DriveSide::LEFT, 1000, {}, false);
+        chassis.moveToPoint(22, -22, 1000, {}, false);
+        // chassis.moveToPoint(35, -16, 2000, {}, false); // Not nessisary and will waste time
+        // chassis.turnToPoint(53, -47, 1000, {}, false);
+        // chassis.moveToPoint(27, -21, 1000, {}, false);
         // chassis.moveToPose(27, -21, 270, 100, {}, false);
         // Delay to allow balls to intake
         delay(500);
@@ -281,14 +299,14 @@ void autonomous() {
 
         
         // Turn and drive twoards the target point
-        chassis.turnToPoint(50, -46, 1000, {}, false);
-        chassis.moveToPoint(50, -46, 2000, {}, false);
+        chassis.turnToPoint(50, -47, 1000, {}, false);
+        chassis.moveToPoint(50, -47, 2000, {}, false);
         
         // Turn twoards loading zone and drive. Also lower the match load
-        chassis.turnToPoint(66, -46, 1000, {}, false);
+        chassis.turnToPoint(66, -47, 1000, {}, false);
         match_load_move(true);
         delay(1000);
-        chassis.moveToPose(66, -46, 90, 1000, {.minSpeed=70}, false);
+        chassis.moveToPose(66, -47, 90, 1000, {.minSpeed=70}, false);
         chassis.arcade(127, 0, true);
         // chassis.arcade(110,0);
         
@@ -296,12 +314,12 @@ void autonomous() {
         delay(800);
         
         // Move to goal and score
-        chassis.moveToPose(27, -46, 90, 2000, {.forwards=false}, false);
+        chassis.moveToPose(27, -47, 90, 2000, {.forwards=false}, false);
         match_load_move(false);
         chassis.arcade(-127,0, true);
         intake_stg3_move(true);
         delay(5000);
-        chassis.arcade(30 ,0, true);
+        chassis.arcade(30,0, true);
         delay(500);
         chassis.arcade(-60, 0, true);
         // 3.5, -47
