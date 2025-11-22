@@ -243,7 +243,7 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-        lcd::print(3, "Autonomous");
+        // lcd::print(3, "Autonomous");
         
         /*
         match_load_move(false);
@@ -285,10 +285,12 @@ void autonomous() {
         match_load_move(false);
         
         // Take center balls
-        // chassis.moveToPoint(34, -16, 2000, {.minSpeed=30, .earlyExitRange=5}, false);
+        chassis.moveToPoint(35, -16, 2000, {}, false);
+        chassis.swingToPoint(22, -22, DriveSide::LEFT, 1000, {}, false);
+        chassis.moveToPoint(22, -22, 1000, {}, false);
         // chassis.moveToPoint(35, -16, 2000, {}, false); // Not nessisary and will waste time
-        chassis.turnToPoint(27, -21, 1000, {}, false);
-        chassis.moveToPoint(27, -21, 1000, {}, false);
+        // chassis.turnToPoint(53, -47, 1000, {}, false);
+        // chassis.moveToPoint(27, -21, 1000, {}, false);
         // chassis.moveToPose(27, -21, 270, 100, {}, false);
         // Delay to allow balls to intake
         delay(500);
@@ -297,14 +299,14 @@ void autonomous() {
 
         
         // Turn and drive twoards the target point
-        chassis.turnToPoint(50, -46, 1000, {}, false);
-        chassis.moveToPoint(50, -46, 2000, {}, false);
+        chassis.turnToPoint(50, -47, 1000, {}, false);
+        chassis.moveToPoint(50, -47, 2000, {}, false);
         
         // Turn twoards loading zone and drive. Also lower the match load
-        chassis.turnToPoint(66, -46, 1000, {}, false);
+        chassis.turnToPoint(66, -47, 1000, {}, false);
         match_load_move(true);
         delay(1000);
-        chassis.moveToPose(66, -46, 90, 1000, {.minSpeed=70}, false);
+        chassis.moveToPose(66, -47, 90, 1000, {.minSpeed=70}, false);
         chassis.arcade(127, 0, true);
         // chassis.arcade(110,0);
         
@@ -312,7 +314,7 @@ void autonomous() {
         delay(800);
         
         // Move to goal and score
-        chassis.moveToPose(27, -46, 90, 2000, {.forwards=false}, false);
+        chassis.moveToPose(27, -47, 90, 2000, {.forwards=false}, false);
         match_load_move(false);
         chassis.arcade(-127,0, true);
         intake_stg3_move(true);
