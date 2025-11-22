@@ -196,7 +196,7 @@ void initialize() {
         // Uncomment to choose starting pose in initialize
         // chassis.setPose(63, -16, 270); 
         // chassis.setPose(0, 0, 0);
-        // autonomous(); // Uncomment this line to run autonomous at the start of the program
+        autonomous(); // Uncomment this line to run autonomous at the start of the program
         wing_descore_move(false);
 
 }
@@ -259,15 +259,15 @@ void autonomous() {
             loop_delay_ms
         );
         */
-        start_angular_pid_logging_task(
-            &chassis,
-            &imu,
-            angular_controller,
-            90, // target in degrees
-            5000, // timeout in ms
-            loop_delay_ms
-        );
-        return;
+        // start_angular_pid_logging_task(
+        //     &chassis,
+        //     &imu,
+        //     angular_controller,
+        //     90, // target in degrees
+        //     5000, // timeout in ms
+        //     loop_delay_ms
+        // );
+        // return;
         
         chassis.setPose(63, 16, 270);
         // chassis.setPose(0, 0, 0);
@@ -278,31 +278,34 @@ void autonomous() {
         match_load_move(false);
         
         // Take center balls
-        chassis.moveToPoint(35, -16, 2000, {}, false);
-        chassis.turnToPoint(27, -21, 1000, {}, false);
-        chassis.moveToPoint(27, -21, 1000, {}, false);
+        chassis.moveToPoint(35, 16, 2000, {}, false);
+        chassis.turnToPoint(22, 22, 1000, {}, false);
+        chassis.moveToPoint(22, 22, 1000, {}, false);
         // chassis.moveToPose(27, -21, 270, 100, {}, false);
         // Delay to allow balls to intake
         delay(500);
+        // chassis.moveToPose(22, -21, 270, 500, {}, false);
+        // delay(1000);
 
+        
         // Turn and drive twoards the target point
-        chassis.turnToPoint(50, 47, 1000, {}, false);
-        chassis.moveToPoint(50, 47, 2000, {}, false);
+        chassis.turnToPoint(45, 47, 1000, {}, false);
+        chassis.moveToPoint(45, 47, 2000, {}, false);
         
         // Turn twoards loading zone and drive. Also lower the match load
-        chassis.turnToPoint(66, 47, 1000, {}, false);
+        chassis.turnToPoint(66, 48, 1000, {}, false);
         match_load_move(true);
         delay(1000);
-        chassis.moveToPose(66, 47, 90, 1000, {.minSpeed=70}, false);
-        chassis.arcade(127, 0, true);
+        chassis.moveToPose(66, 48, 90, 1000, {.minSpeed=30}, false);
+        chassis.arcade(20, 0, true);
         // chassis.arcade(110,0);
         
         // Delay to allow for loading
         delay(800);
         
         // Move to goal and score
-        chassis.moveToPose(27, 47, 90, 2000, {.forwards=false}, false);
-        match_load_move(false);
+        chassis.moveToPose(28, 47, 90, 2000, {.forwards=false}, false);
+        // match_load_move(false);
         chassis.arcade(-127,0, true);
         intake_stg3_move(true);
         delay(5000);
