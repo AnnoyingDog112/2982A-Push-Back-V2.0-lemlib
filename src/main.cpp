@@ -286,12 +286,15 @@ void autonomous() {
         
         // Take center balls
         chassis.moveToPoint(35, -16, 2000, {}, false);
-        chassis.swingToPoint(22, -22, DriveSide::LEFT, 1000, {}, false);
-        chassis.moveToPoint(22, -22, 1000, {}, false);
-        
+        chassis.turnToPoint(27, -21, 1000, {}, false);
+        chassis.moveToPoint(27, -21, 1000, {}, false);
+        // chassis.moveToPose(27, -21, 270, 100, {}, false);
         // Delay to allow balls to intake
         delay(500);
+        // chassis.moveToPose(22, -21, 270, 500, {}, false);
+        // delay(1000);
 
+        
         // Turn and drive twoards the target point
         chassis.turnToPoint(50, -47, 1000, {}, false);
         chassis.moveToPoint(50, -47, 2000, {}, false);
