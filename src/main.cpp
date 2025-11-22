@@ -301,9 +301,9 @@ void autonomous() {
         chassis.arcade(-127,0, true);
         intake_stg3_move(true);
         delay(5000);
-        chassis.arcade(0,0, true);
+        chassis.arcade(30 ,0, true);
         delay(500);
-        chassis.arcade(127, 0, true);
+        chassis.arcade(-60, 0, true);
         // 3.5, -47
         // 22, -22
 }
