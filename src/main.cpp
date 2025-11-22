@@ -1,7 +1,4 @@
 #include "main.h"
-#include "lemlib/chassis/chassis.hpp"
-#include "lemlib/asset.hpp"
-#include "lemlib/chassis/chassis.hpp"
 
 // Motor/chassis objects
 
@@ -104,9 +101,6 @@ adi::DigitalOut trapdoor('C', false);
 adi::DigitalOut match_load('E', false);
 adi::DigitalOut wing_descore('A', false);
 
-//assets
-ASSET(NineBallTraj_txt);//"part of 9 ball-path.jerryio.txt");
-
 // Helpers for moving mechanisms
 
 void trapdoor_move(bool open_close){
@@ -204,8 +198,6 @@ void initialize() {
         // chassis.setPose(0, 0, 0);
         // autonomous(); // Uncomment this line to run autonomous at the start of the program
         wing_descore_move(false);
-        autonomous(); // Uncomment this line to run autonomous at the start of the program
-        wing_descore_move(false);
 
 }
 
@@ -267,7 +259,6 @@ void autonomous() {
             loop_delay_ms
         );
         */
-        /*
         start_angular_pid_logging_task(
             &chassis,
             &imu,
@@ -277,7 +268,6 @@ void autonomous() {
             loop_delay_ms
         );
         return;
-        */
         
         chassis.setPose(63, 16, 270);
         // chassis.setPose(0, 0, 0);
@@ -288,10 +278,10 @@ void autonomous() {
         match_load_move(false);
         
         // Take center balls
-        chassis.moveToPoint(35, 16, 2000, {}, false);
-        chassis.swingToPoint(22, 22, DriveSide::LEFT, 1000, {}, false);
-        chassis.moveToPoint(22, 22, 1000, {}, false);
-        
+        chassis.moveToPoint(35, -16, 2000, {}, false);
+        chassis.turnToPoint(27, -21, 1000, {}, false);
+        chassis.moveToPoint(27, -21, 1000, {}, false);
+        // chassis.moveToPose(27, -21, 270, 100, {}, false);
         // Delay to allow balls to intake
         delay(500);
 
