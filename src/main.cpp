@@ -27,7 +27,7 @@ TrackingWheel horizontal_tracking_wheel(
 
 OdomSensors sensors(nullptr, 
                             nullptr, 
-                            nullptr,
+                            &horizontal_tracking_wheel,
                             nullptr,
                             &imu // inertial sensor(none right now)
 );
