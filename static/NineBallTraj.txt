@@ -1,0 +1,37 @@
+3.5, -47, 89.534
+4.588, -45.322, 89.534
+5.779, -43.716, 88.641
+7.077, -42.196, 87.836
+8.485, -40.778, 87.155
+10.001, -39.476, 86.625
+11.62, -38.304, 86.261
+13.334, -37.275, 86.059
+15.13, -36.399, 83.637
+16.998, -35.685, 80.544
+18.925, -35.153, 77.327
+20.89, -34.787, 73.971
+22.878, -34.586, 70.456
+24.877, -34.546, 66.755
+26.871, -34.689, 62.837
+28.846, -34.997, 58.658
+30.79, -35.466, 54.157
+32.674, -36.133, 49.247
+34.481, -36.986, 43.792
+36.16, -38.069, 37.552
+37.597, -39.455, 30.055
+38.504, -41.216, 20
+38.272, -43.149, 20
+36.937, -44.607, 51.104
+35.166, -45.526, 45.997
+33.266, -46.142, 40.104
+31.307, -46.543, 33.175
+29.326, -46.808, 24.346
+27, -47, 0
+27, -47, 0
+7.068, -48.643, 0
+endData
+127
+100
+200
+3.5, -47, 19.77, -19.77, 57.627, -45.4, 27, -47
+#PATH.JERRYIO-DATA {"appVersion":"0.10.0","format":"LemLib v0.5","gc":{"robotWidth":14,"robotHeight":15,"robotIsHolonomic":false,"showRobot":true,"uol":2.54,"pointDensity":2,"controlMagnetDistance":1.968503937007874,"fieldImage":{"displayName":"V5RC 2026 - Push Back","signature":"V5RC-PushBack-H2H-TopDownHighlighted-TileColor66_71","origin":{"__type":"built-in"}},"coordinateSystem":"VEX Gaming Positioning System"},"paths":[{"segments":[{"controls":[{"uid":"YVChPqXJM9","x":3.5,"y":-47,"lock":false,"visible":true,"heading":225,"__type":"end-point"},{"uid":"R8ZNIxdDyt","x":19.770121153604986,"y":-19.770121153604986,"lock":false,"visible":true,"__type":"control"},{"uid":"ppHes6fV8r","x":57.62679938541282,"y":-45.399797720481104,"lock":false,"visible":true,"__type":"control"},{"uid":"QC2vXJVajw","x":27,"y":-47,"lock":false,"visible":true,"heading":90,"__type":"end-point"}],"speedProfiles":[],"lookaheadKeyframes":[],"uid":"SUV00cIAlV"}],"pc":{"speedLimit":{"minLimit":{"value":0,"label":"0"},"maxLimit":{"value":127,"label":"127"},"step":1,"from":20,"to":100},"bentRateApplicableRange":{"minLimit":{"value":0,"label":"0"},"maxLimit":{"value":1,"label":"1"},"step":0.001,"from":0,"to":0.1},"maxDecelerationRate":127},"name":"Path","uid":"1PD84H2MPD","lock":false,"visible":true}]}
