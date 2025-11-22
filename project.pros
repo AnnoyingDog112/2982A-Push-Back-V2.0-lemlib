@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "Main",
+    "project_name": "AWP Auto",
     "target": "v5",
     "templates": {
       "LemLib": {
@@ -635,7 +635,7 @@
       }
     },
     "upload_options": {
-      "description": "Main Auto Plan",
+      "description": "AWP Auto Plan",
       "slot": 3
     },
     "use_early_access": false
