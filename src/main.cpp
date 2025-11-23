@@ -188,13 +188,24 @@ void initialize() {
                         lcd::print(0, "X: %f", chassis.getPose().x); // x
                         lcd::print(1, "Y: %f", chassis.getPose().y); // y
                         lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
-                        // cout << "(" << chassis.getPose().x << ", " << chassis.getPose().y << ")" << ",";
+                        cout << "(" << chassis.getPose().x << ", " << chassis.getPose().y << ")" << ",";
                         // log position telemetry
                         lemlib::telemetrySink()->info("Chassis pose: {}", chassis.getPose());
                         // delay to save resources
                         delay(50);
                 }
         });
+        /*
+        Task antiJam([&]()-> void {
+                while (true){
+                        if (intake_stg_2_motor.get_current_draw() > 2000){
+                                intake_stg_2_motor.move_velocity(-600);
+                                delay(300);
+                        }
+                        delay(20);
+                }
+        });
+        */
         chassis.setBrakeMode(motor_brake_mode_e::E_MOTOR_BRAKE_HOLD);
         // lcd::register_btn1_cb(on_center_button);
         
@@ -285,9 +296,9 @@ void autonomous() {
         match_load_move(false);
         
         // Take center balls
-        chassis.moveToPoint(35, -16, 2000, {}, false);
-        chassis.turnToPoint(27, -21, 1000, {}, false);
-        chassis.moveToPoint(27, -21, 1000, {}, false);
+        chassis.moveToPoint(37, -16, 2000, {}, false);
+        chassis.turnToPoint(21, -21.5, 1000, {}, false);
+        chassis.moveToPoint(21, -21.5, 1000, {}, false);
         // chassis.moveToPose(27, -21, 270, 100, {}, false);
         // Delay to allow balls to intake
         delay(500);
@@ -311,12 +322,12 @@ void autonomous() {
         delay(800);
         
         // Move to goal and score
-        chassis.moveToPose(27, -47, 90, 2000, {.forwards=false}, false);
-        match_load_move(false);
+        chassis.moveToPose(27, -48, 90, 2000, {.forwards=false}, false);
+        // match_load_move(false);
         chassis.arcade(-127,0, true);
         intake_stg3_move(true);
-        delay(5000);
-        chassis.arcade(30,0, true);
+        delay(3000);
+        chassis.arcade(30, 0, true);
         delay(500);
         chassis.arcade(-60, 0, true);
         // 3.5, -47
@@ -375,26 +386,6 @@ void opcontrol() {
                 else{
                         intake_stg2_stop();
                 }
-                // if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)){
-                //         if (!intake_stg2_O_F){
-                //                 intake_stg2_move(true);
-                //                 intake_stg2_O_F = true;
-                //         }
-                //         else{
-                //                 intake_stg2_stop();
-                //                 intake_stg2_O_F = false;
-                //         }
-                // }
-                // else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
-                //         if(!intake_stg2_O_F){
-                //                 intake_stg2_move(false);
-                //                 intake_stg2_O_F = true;
-                //         }
-                //         else{
-                //                 intake_stg2_stop();
-                //                 intake_stg2_O_F = false;
-                //         }
-                // }
                 
                 if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
                         intake_stg1_move(true);
