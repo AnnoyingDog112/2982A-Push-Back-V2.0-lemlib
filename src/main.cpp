@@ -1,6 +1,7 @@
 #include "main.h"
 #include "lemlib/asset.hpp"
 #include "lemlib/chassis/chassis.hpp"
+#include "pros/adi.hpp"
 
 // Motor/chassis objects
 
@@ -103,11 +104,11 @@ adi::DigitalOut trapdoor('C', false);
 adi::DigitalOut match_load('E', false);
 adi::DigitalOut wing_descore('A', false);
 
+
 //assets
 ASSET(NineBallTraj_txt);//"part of 9 ball-path.jerryio.txt");
 
 // Helpers for moving mechanisms
-
 void trapdoor_move(bool open_close){
         trapdoor.set_value(open_close);
 }
